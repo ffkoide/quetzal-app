@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Quetzal — a native Mac viewer for Parquet files</title>
+  <meta name="description" content="Quetzal is a native Mac viewer for Parquet files, local or on S3. Browse buckets with your AWS profiles, read only the bytes you need, chart time series, open folders as one table and compare two files.">
+  <meta property="og:title" content="Quetzal — a native Mac viewer for Parquet files">
+  <meta property="og:description" content="Local or on S3. Reads only the bytes it needs. Time-series charts, partitioned folders as one table, and a diff of two files.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="apple-touch-icon" href="images/icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="#top"><img src="images/favicon.png" width="28" height="28" alt=""><span>Quetzal</span></a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#why">Why</a>
+        <a href="#features">Features</a>
+        <a href="#cli">CLI &amp; MCP</a>
+        <a href="#requirements">Requirements</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://github.com/ffkoide/quetzal-app/releases">Updates</a>
+        <a href="https://github.com/ffkoide/quetzal-app/issues">Issues</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ================= Hero ================= -->
+    <div class="hero" id="top">
+      <div class="wrap">
+        <img class="hero-icon" src="images/icon.png" width="132" height="132" alt="Quetzal app icon: a green quetzal bird in front of a bar chart">
+        <h1>Quetzal</h1>
+        <p class="pitch">A native Mac viewer for Parquet files — local or on S3</p>
+        <p class="sub">Open a file, a folder or an S3 object and read it right away. Quetzal reads only the parts it needs, so a big file — even one in a bucket — opens without being downloaded first.</p>
+
+        <div class="buttons">
+          <a class="btn btn-primary" href="https://github.com/ffkoide/quetzal-app/releases">Download — coming soon</a>
+        </div>
+        <p class="facts">macOS 14 or later · Apple Silicon and Intel</p>
+
+        <p class="notice"><strong>Not released yet.</strong> Quetzal is a personal project by <a href="https://github.com/ffkoide">ffkoide</a>. This page describes the first version (0.1). There is nothing to download today; signed builds will appear on the <a href="https://github.com/ffkoide/quetzal-app/releases">releases page</a>.</p>
+
+        <figure class="shot hero-shot">
+          <div class="frame">
+            <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img src="images/table.png" width="1100" height="700" alt="A Quetzal window with a sidebar listing Parquet files on the left and a table of 10,000 rows on the right. The summary bar above the table reads 10,000 rows, 4 columns, 53 KB, 5 row groups.">
+          </div>
+          <figcaption>The sidebar shows the folder of the open file; the summary bar shows rows, columns, size and row groups.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- ================= Why ================= -->
+    <section id="why">
+      <div class="wrap">
+        <h2>Why another Parquet viewer?</h2>
+        <p class="section-intro">Parquet files are everywhere, but a Mac-native way to look inside them — especially the ones in S3 — has been missing. Quetzal focuses on four things, in this order.</p>
+
+        <div class="why">
+          <article class="why-item">
+            <div class="why-text">
+              <span class="why-num" aria-hidden="true">1</span>
+              <h3>S3-native and Mac-native</h3>
+              <p>Pick an AWS profile, walk through buckets and folders like in Finder, and open a Parquet object directly. Quetzal reads the footer and just the byte ranges it needs (HTTP range requests). Nothing is downloaded first, and the window tells you what it cost, for example “1.2 MB read · 7 requests”.</p>
+              <ul>
+                <li>Uses the profiles you already have in <code>~/.aws/config</code> and <code>~/.aws/credentials</code>.</li>
+                <li>Never asks for keys. It only needs a profile name.</li>
+                <li>Recent locations are remembered; right-click a row to copy its S3 URL.</li>
+              </ul>
+            </div>
+            <figure class="shot">
+              <div class="frame">
+                <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                <img src="images/s3.png" width="720" height="480" loading="lazy" alt="The Open from S3 window: a profile menu, a bucket menu, an address field with s3://data/, and a folder tree with day=2026-05-08, many and other folders and Parquet files with their sizes.">
+              </div>
+              <figcaption>The S3 browser: choose a profile and a bucket, walk the folders, open a file. Dates follow your Mac’s language.</figcaption>
+            </figure>
+          </article>
+
+          <article class="why-item flip">
+            <div class="why-text">
+              <span class="why-num" aria-hidden="true">2</span>
+              <h3>Made for time series and sensor data</h3>
+              <p>Quetzal finds the timestamp column by itself: a real timestamp type, or an integer epoch in seconds, milliseconds, microseconds or nanoseconds. Open the chart pane and every numeric column you pick gets its own strip on a shared time axis. Drag across a strip to zoom; Quetzal re-reads just that range, so a few thousand points always stay sharp. Double-click a point and the table jumps to that row.</p>
+              <ul>
+                <li>Up to 8 columns at once, one strip each.</li>
+                <li>Built with high-frequency data in mind, such as IMU and pressure sensors.</li>
+                <li>Times are shown in UTC.</li>
+              </ul>
+            </div>
+            <figure class="shot">
+              <div class="frame">
+                <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                <img src="images/chart.png" width="900" height="560" loading="lazy" alt="The chart pane: x is the timestamp column, and there are three strips for acc_x, acc_y and n. Two sine waves are drawn on top, and a dense band below.">
+              </div>
+              <figcaption>The chart pane: x is the timestamp column, one strip per column. Drag to zoom.</figcaption>
+            </figure>
+          </article>
+
+          <article class="why-item">
+            <div class="why-text">
+              <span class="why-num" aria-hidden="true">3</span>
+              <h3>A folder of files is one table</h3>
+              <p>Open a folder — or an S3 prefix — full of Parquet files and Quetzal shows one table. Hive-style folders such as <code>day=2026-05-08/</code> become columns. Files whose columns differ still line up, with NULL where a column is missing. The inspector lists every file and the row groups inside it.</p>
+              <ul>
+                <li>Only the file footers are read up front, several at a time.</li>
+                <li>Works with local folders and with S3 prefixes.</li>
+                <li>Up to 10,000 files per folder.</li>
+              </ul>
+            </div>
+            <figure class="shot narrow">
+              <div class="frame">
+                <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                <img src="images/dataset.png" width="380" height="746" loading="lazy" alt="The inspector for a folder of two files. It shows 20,000 rows, 10 row groups, partitioned by day, five columns including a day column, the two day= files, and the first row groups.">
+              </div>
+              <figcaption>The inspector for a folder with two <code>day=</code> partitions: files, row groups and the <code>day</code> column.</figcaption>
+            </figure>
+          </article>
+
+          <article class="why-item flip">
+            <div class="why-text">
+              <span class="why-num" aria-hidden="true">4</span>
+              <h3>See what changed between two files</h3>
+              <p>Compare two files, two folders, or one of each. The schema comparison lists columns that are only in A, only in B, or changed type. The value comparison lines the rows up and shows which columns differ, how many rows, and the first differing rows, with a Go to Row button. Set a tolerance when tiny numeric differences do not matter.</p>
+              <ul>
+                <li>Either side can be local or in S3.</li>
+                <li>Rows are matched by position, not by a key column (not yet).</li>
+              </ul>
+            </div>
+            <figure class="shot">
+              <div class="frame">
+                <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                <img src="images/diff.png" width="900" height="636" loading="lazy" alt="The compare window. The schema line reads 3 same, 1 only in A. The values section says 9,999 rows compared and 2 columns differ, lists the differing columns, and shows the first differing rows side by side.">
+              </div>
+              <figcaption>The compare window: schema differences first, then the columns whose values differ, with example rows.</figcaption>
+            </figure>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Features ================= -->
+    <section id="features" class="alt">
+      <div class="wrap">
+        <h2>Everything else you need to look inside a file</h2>
+        <p class="section-intro">The basics are done carefully, too.</p>
+
+        <ul class="grid">
+          <li class="card">
+            <h3>Fast on big tables</h3>
+            <p>Rows are read page by page and cached. Jumping to any place in a 20-million-row file takes tens of milliseconds in our tests, and memory stays small.</p>
+          </li>
+          <li class="card">
+            <h3>Sidebar</h3>
+            <p>A tree of the folder the open file lives in, on disk or in S3. Double-click another file to open it in a new tab.</p>
+          </li>
+          <li class="card">
+            <h3>Inspector</h3>
+            <p>File summary, key/value metadata, schema, and row groups you can expand down to each column chunk.</p>
+          </li>
+          <li class="card">
+            <h3>Column explorer</h3>
+            <p>Pick a column to see its range, mean, quartiles, histogram, box plot, distinct count and top values. One pass over the data: about half a second for 20 million rows in our tests.</p>
+          </li>
+          <li class="card">
+            <h3>Cell pane</h3>
+            <p>Double-click a cell to read its full text. JSON turns into a tree you can fold, and you can copy a value or its key path.</p>
+          </li>
+          <li class="card">
+            <h3>Copy and export</h3>
+            <p><kbd>⌘C</kbd> copies the selected rows as TSV with a header, ready for Numbers or Google Sheets. Export to CSV, TSV, JSON Lines or Parquet, with a progress bar and Cancel.</p>
+          </li>
+          <li class="card">
+            <h3>Quick Look</h3>
+            <p>Press Space on a <code>.parquet</code> file in Finder to see its schema and first rows. Finder icons show a small table.</p>
+          </li>
+          <li class="card">
+            <h3>Types shown as they are</h3>
+            <p>Timestamps with their unit, dates, decimals, nested structs and lists. NULLs are grey. Very long values are shortened in the table and shown in full in the cell pane.</p>
+          </li>
+          <li class="card">
+            <h3>Read-only and native</h3>
+            <p>Quetzal never changes the files you open. A Rust core does the reading; the app itself is SwiftUI and AppKit, with a real macOS table.</p>
+          </li>
+        </ul>
+
+        <div class="showcase">
+          <figure class="shot narrow">
+            <div class="frame">
+              <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+              <img src="images/columns.png" width="360" height="460" loading="lazy" alt="Column explorer charts for a column of 20 million rows: a bell-shaped histogram, a box plot with outliers, and a line of values by row.">
+            </div>
+            <figcaption>Column explorer, for a column of 20,000,000 rows.</figcaption>
+          </figure>
+          <figure class="shot">
+            <div class="frame">
+              <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+              <img src="images/preview.png" width="1280" height="853" loading="lazy" alt="The Quick Look preview of a Parquet file: the file name and size, a schema list with timestamp, date, decimal, string and struct columns, and the first rows of data.">
+            </div>
+            <figcaption>The Quick Look preview: summary, schema and the first rows.</figcaption>
+          </figure>
+        </div>
+        <p class="note">Screenshots are rendered by the app’s own test suite from small sample files, so they have no window frame of their own; the frames here are just decoration.</p>
+      </div>
+    </section>
+
+    <!-- ================= CLI and MCP ================= -->
+    <section id="cli">
+      <div class="wrap">
+        <h2>Command line and MCP</h2>
+        <p class="section-intro">The app comes with <code>quetzal</code>, a command-line tool built on the same core. It opens local files and <code>s3://</code> URLs and prints a table, or JSON with <code>--json</code>. The same commands are offered to AI tools as an MCP server, so Claude Code can look into a Parquet file without anyone pasting data.</p>
+
+        <div class="cli">
+          <div>
+            <table class="cmds">
+              <caption>Commands</caption>
+              <tbody>
+                <tr><th><code>info</code></th><td>Rows, columns, row groups, size, writer, key/value metadata</td></tr>
+                <tr><th><code>schema</code></th><td>Column names, types and nullability</td></tr>
+                <tr><th><code>head</code></th><td>The first rows, or rows from <code>--offset</code></td></tr>
+                <tr><th><code>stats</code></th><td>One column: range, mean, quartiles, histogram, top values</td></tr>
+                <tr><th><code>series</code></th><td>Points for a line chart of a numeric or time column</td></tr>
+                <tr><th><code>rowgroups</code></th><td>Row groups and their column chunks</td></tr>
+                <tr><th><code>export</code></th><td>Write rows as CSV, TSV, JSON Lines or Parquet</td></tr>
+                <tr><th><code>files</code></th><td>The files of a folder opened as one table</td></tr>
+                <tr><th><code>ls</code></th><td>List an S3 prefix, or the buckets</td></tr>
+                <tr><th><code>profiles</code></th><td>AWS profile names (never keys)</td></tr>
+                <tr><th><code>mcp</code></th><td>Run the MCP server on stdio</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div>
+            <pre><code><span class="c"># a few rows from S3, with one of your AWS profiles</span>
+quetzal head s3://my-bucket/data/part-0.parquet \
+  --profile my-profile -n 5
+
+<span class="c"># statistics of one column</span>
+quetzal stats sensors.parquet acc_x
+
+<span class="c"># the first 1,000 rows as CSV</span>
+quetzal export sensors.parquet --format csv \
+  --rows 0..1000 -o first1000.csv</code></pre>
+
+            <p><strong>Use it from Claude Code</strong></p>
+            <pre><code>claude mcp add quetzal -- &lt;path&gt; mcp</code></pre>
+            <p class="aside">The app’s <em>Install Command-Line Tools…</em> item links <code>quetzal</code> into your PATH and copies this command with the right path. The MCP tools are <code>parquet_info</code>, <code>parquet_schema</code>, <code>parquet_head</code>, <code>parquet_column_stats</code>, <code>parquet_series</code>, <code>parquet_row_groups</code>, <code>s3_list</code> and <code>aws_profiles</code>. All of them are read-only, and files stay open between calls, so a second question about the same file is fast.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Requirements ================= -->
+    <section id="requirements" class="alt">
+      <div class="wrap">
+        <h2>Requirements</h2>
+        <ul class="req">
+          <li><strong>macOS 14 (Sonoma) or later</strong><span>Needed for Swift Charts and the newer SwiftUI features.</span></li>
+          <li><strong>Apple Silicon or Intel</strong><span>One universal app.</span></li>
+          <li><strong>About 135 MB on disk</strong><span>The download is a DMG, roughly 40 MB.</span></li>
+          <li><strong>AWS profiles, for S3</strong><span>Optional. Local files need nothing else.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= FAQ ================= -->
+    <section id="faq">
+      <div class="wrap">
+        <h2>FAQ</h2>
+        <div class="faq">
+          <details>
+            <summary>Can I download it?</summary>
+            <p>Not yet. The first builds will be a signed and notarized DMG on the <a href="https://github.com/ffkoide/quetzal-app/releases">releases page</a>. Until then, the button above only brings you there.</p>
+          </details>
+          <details>
+            <summary>Is it free and open source?</summary>
+            <p>Quetzal is not open source for now. Pricing and terms will be announced with the first release.</p>
+          </details>
+          <details>
+            <summary>How big a file can it open?</summary>
+            <p>Quetzal reads the footer first and then only the row groups it needs, so memory does not grow with the file. It has been tried on a 20-million-row, 500 MB file. Files of several gigabytes have not been tested yet.</p>
+          </details>
+          <details>
+            <summary>Does it send my data anywhere?</summary>
+            <p>No. The app has no analytics or telemetry. Today the only network use is reading from S3 when you open an <code>s3://</code> location, with your own AWS profile. Quetzal opens your files read-only; export writes to a file you choose.</p>
+          </details>
+          <details>
+            <summary>Does it work with AWS SSO?</summary>
+            <p>Support is built in, but it has not been tested with a real SSO setup yet. Profiles with access keys are tested.</p>
+          </details>
+          <details>
+            <summary>Why is it not on the Mac App Store?</summary>
+            <p>Apps there run in a sandbox that makes it hard to read <code>~/.aws</code>, where your S3 credentials live. Quetzal will ship as a notarized DMG instead. The App Store may come later.</p>
+          </details>
+          <details>
+            <summary>Will there be a Windows or Linux version?</summary>
+            <p>Nothing is planned yet. The core is written in Rust and kept separate from the Mac app, so that it could be reused one day.</p>
+          </details>
+          <details>
+            <summary>Is the app available in other languages?</summary>
+            <p>The app is in English for now. A Japanese translation is planned.</p>
+          </details>
+          <details>
+            <summary>Something is wrong. Where do I report it?</summary>
+            <p>Open an issue in the <a href="https://github.com/ffkoide/quetzal-app/issues">issue tracker</a>. That repository holds the issues, the releases and this website; the app's source code is not published.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div>
+        <p><strong>Quetzal</strong> — a personal project by ffkoide.</p>
+        <p>Apache Parquet is a trademark of the Apache Software Foundation. Quetzal is not affiliated with it. Mac and macOS are trademarks of Apple Inc.</p>
+      </div>
+      <nav aria-label="Project links">
+        <a href="https://github.com/ffkoide/quetzal-app/releases">Releases</a>
+        <a href="https://github.com/ffkoide/quetzal-app/issues">Issues</a>
+        <a href="https://github.com/ffkoide">ffkoide on GitHub</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
